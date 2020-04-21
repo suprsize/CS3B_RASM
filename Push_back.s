@@ -79,6 +79,7 @@ Push_back:
 	@ Increment the ByteCounter by the number of newly malloced bytes
 	ldr r1, [r11]		@ r1 = ByteCounter
 	add r1, r0			@ r1 = ByteCounter + InfoString.length() + 1
+	add r1, #NODE_SIZE	@ r1 = ByteCounter + NODE_SIZE(8 Bytes)
 	str r1, [r11]		@ store the new count into ByteCounter 
 	
 	
