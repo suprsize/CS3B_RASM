@@ -29,9 +29,9 @@
 @ All registers are preserved as per AAPCS
 @***********************************************************************
 
-.equiv NULL, 		0	@ NULL pointer for linked list
-.equiv NODE_SIZE, 	8	@ byte 0123 for string address | 4567 for *next
-.equiv NEXT,		4	@ the offset to the first byte of *next
+.equiv null2, 		0	@ null2 pointer for linked list
+.equiv node_size3, 	8	@ byte 0123 for string address | 4567 for *nextg
+.equiv nextg,		4	@ the offset to the first byte of *nextg
 .equiv NOT_FOUND,	-1	@ -1 indicts that no node with keyIndex exist
 .equiv TRUE,		1	@ 1 indicts that the removal was successful
 .equiv FALSE,		0	@ 0 indicts that the removal was not successful
@@ -75,19 +75,22 @@ Remove_node:
 	mov r6, r0			@ r6 = &node that is being removed
 	
 	
-	ldr r5, [r7]		@ r5 = *head
+	ldr r5, =head		@ r5 = *head
+	ldr r5, [r5]
 	ldr r4, [r8]		@ r4 = *tail
-
 	@ Checks to see if it is the firstNode of the linked list
 	cmp r6, r5			@ compare(&node, *head)
 	bne	lastNode		@ if(&node == *head)
 firstNode:
-	ldr r3, [r5, #NEXT]	@ r3 = head->next
-	str r3, [r7]		@ head = head->next
+	ldr r7, =head
+	ldr r3, [r5, #nextg]	@ r3 = head->nextg
+	str r3, [r7]		@ head = head->nextg
 	
+	ldr r4, =tail
+	ldr r4, [r4]
 	cmp r6, r4			@ compare(&node, *tail)
 	bne	remove			@ if(*head == *tail)
-	mov r0, #NULL		@ r0 = nullptr
+	mov r0, #null2		@ r0 = nullptr
 	str r0, [r8]		@ tail = nullptr
 	b remove			@ we are now ready to actually free the node
 	
@@ -102,8 +105,8 @@ lastNode:
 	bl Find_node		@ r0 = first byte of the node one before keyIndex, linked-list[keyIndex - 1], prevNode
 	
 	str r0, [r8]		@ tail = tial->prev
-	mov r1, #NULL		@ r1 = nullptr
-	str r1, [r0, #NEXT]	@ tail->next = nullptr
+	mov r1, #null2		@ r1 = nullptr
+	str r1, [r0, #nextg]	@ tail->nextg = nullptr
 	b remove			@ we are now ready to actually free the node
 
 	@ The node to remove is at the middle of linked list
@@ -113,8 +116,8 @@ middle:
 	sub r1, #1			@ r1 = keyIndex - 1
 	bl Find_node		@ r0 = first byte of the node one before keyIndex, linked-list[keyIndex - 1], prevNode
 	
-	ldr r1, [r6, #NEXT]	@ r1 = currentNode->next
-	str r1, [r0, #NEXT] @ prevNode->next = currentNode->next
+	ldr r1, [r6, #nextg]	@ r1 = currentNode->nextg
+	str r1, [r0, #nextg] @ prevNode->nextg = currentNode->nextg
 	b remove			@ we are now ready to actually free the node
 
 
@@ -127,7 +130,7 @@ remove:
 	@ Decrement the ByteCounter by the number of freed bytes
 	ldr r1, [r11]		@ r1 = ByteCounter
 	sub r1, r0			@ r1 = ByteCounter - (InfoString.length() + 1)
-	sub r1, #NODE_SIZE	@ r1 = ByteCounter - NODE_SIZE(8 Bytes)
+	sub r1, #node_size3	@ r1 = ByteCounter - node_size3(8 Bytes)
 	str r1, [r11]		@ store the new count into ByteCounter 
 	
 	@ Now free the infoString of keyNode
@@ -140,11 +143,10 @@ remove:
 	
 	@ Return the appropriate signal to the caller
 	mov r0, #TRUE		@ RETURN true to indict that the removal was successful
-	b finish			@ end the method
+	b finishhere			@ end the method
 notFound:
 	mov r0, #FALSE		@ RETURN false to indict that the removal was not successful
 	
-finish:
+finishhere:
 	pop {r1-r11, lr}	@ bring stack back to initial state.
 	bx lr				@ return from subroutine
-

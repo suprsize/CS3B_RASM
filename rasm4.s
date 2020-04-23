@@ -8,6 +8,29 @@
 
 .equiv LEN, 512	@ const that has the maximum bytes getstring readsequiv LEN, 32	
 
+.macro PrintIndex Index
+
+    push {r0, r1, r2}
+    mov r2, #0 
+    ldr r0, =rightParen
+    bl putstring
+
+    ldr r0, =\Index
+    ldr r0, [r0]
+    ldr r1, =indexOut
+    str r2, [r1]
+    bl intasc32
+    ldr r0, =indexOut
+    bl putstring
+
+    ldr r0, =leftParen
+    bl putstring
+
+    pop {r0, r1, r2}
+
+.endm
+
+
 .macro ClearScreen String
 
         push {r0, r1}
@@ -47,7 +70,6 @@
 
     ldr r0, =\FileName
     mov r1, #00
-    mov r7, #0777
     mov r7, #5
     svc 0
 
@@ -99,8 +121,14 @@
 .endM
 
 .data 
-    
-    message: .asciz  "\n\n\tName:\t\tKhaja Zuhuruddin\n\tProgram:\trasm4.s\n\tClass:\t\tCS 3B\n\tDate:\t\t4/22/20\n\n"
+
+    rightParen: .asciz "[" 
+
+    leftParen: .asciz "] "
+
+    indexOut:   .skip 16
+
+    message:    .asciz  "\n\n\tName:\t\tKhaja Zuhuruddin\n\tProgram:\trasm4.s\n\tClass:\t\tCS 3B\n\tDate:\t\t4/22/20\n\n"
     
     Prompt:     .asciz "\nClear Screen (Y/N):\t"
      
@@ -137,7 +165,7 @@
 
     menuSeven:      .asciz "\n<7> Quit\n"
 
-    inFileName:     .asciz "input.txt"
+    inFileName:     .asciz "input2.txt"
 
     outFileName:    .asciz "output.txt"
 

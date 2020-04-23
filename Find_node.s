@@ -21,9 +21,9 @@
 @ All registers are preserved as per AAPCS
 @***********************************************************************
 
-.equiv NULL, 		0	@ NULL pointer for linked list
-.equiv NOT_FOUND, 	-1	@ -1 to indicate not found 
-.equiv NEXT,		4	@ the offset to the first byte of *next
+.equiv NULLONE, 		0	@ NULLONE pointer for linked list
+.equiv NOT_FOUND2, 	-1	@ -1 to indicate not found 
+.equiv NEXT1,		4	@ the offset to the first byte of *NEXT1
 
 
 .data
@@ -52,35 +52,37 @@ Find_node:
 
 
 	@ Looks to see if the linked-list is not empty
+	ldr r7, =head
 	ldr r4, [r7]		@ r4(currentNode) = *head
-	cmp	r4, #NULL		@ compare(*head, nullptr)
-	beq notFound		@ if(*head != nullptr)	
+	cmp	r4, #NULLONE		@ compare(*head, NULLONEptr)
+	beq notFoundFind_node		@ if(*head != NULLONEptr)	
 	
 
 	@ Start the while loop to look for the node 
 	mov r5, r4			@ r5(prevNode) = currentNode
 	mov r6, #0			@ initialize the while-counter to zero
-	ldr r4, [r4, #NEXT]	@ r4(currentNode) = currentNode.next()
-while:
+	ldr r4, [r4, #NEXT1]	@ r4(currentNode) = currentNode.NEXT1()
+
+whileFind_node:
 	cmp r6, r8			@ compare(while-counter, keyIndex)
-	beq found			@ while(counter != keyIndex && 
-	cmp r4, #NULL		@ compare(currentNode, NULL)
-	beq notFound		@ 							    currentNode != NULL)
+	beq foundFind_node			@ while(counter != keyIndex && 
+	cmp r4, #NULLONE		@ compare(currentNode, NULLONE)
+	beq notFoundFind_node		@ 							    currentNode != NULLONE)
 	
 	add r6, #1			@ ++counter
 	mov r5, r4			@ r5(prevNode) = currentNode
-	ldr r4, [r4, #NEXT]	@ r4(currentNode) = currentNode.next()
-	b while				@ go back to beginning of while loop
+	ldr r4, [r4, #NEXT1]	@ r4(currentNode) = currentNode.NEXT1()
+	b whileFind_node				@ go back to beginning of while loop
 	
 	
-found:
+foundFind_node:
 	mov r0, r5			@ return  prevNode
-	b finish			@ go to the end
+	b finishFind_node			@ go to the end
 	
-notFound:
-	mov r0, #NOT_FOUND	@ return NOT_FOUND
+notFoundFind_node:
+	mov r0, #NOT_FOUND2	@ return NOT_FOUND2
 	
-finish:
+finishFind_node:
 	pop {r1-r11, lr}	@ bring stack back to initial state.
 	bx lr				@ return from subroutine
 
