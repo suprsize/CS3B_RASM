@@ -148,5 +148,9 @@ notFound:
 	mov r0, #FALSE		@ RETURN false to indict that the removal was not successful
 	
 finishhere:
+	ldr r2, =nodeCount2	
+	ldr r3, [r2]
+	sub r3, #1
+	str r3, [r2]
 	pop {r1-r11, lr}	@ bring stack back to initial state.
 	bx lr				@ return from subroutine

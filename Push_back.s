@@ -56,7 +56,8 @@ Push_back:
 	mov r7, r0			@ copy address of pointer to Head into r7
 	mov r8, r1			@ copy address of pointer to Tail into r8
 	mov r10,  r2		@ copy address of InfoString into r10
-	mov r11, r3			@ copy address of ByteCounter into r11
+	ldr r11, =count
+	//mov r11, r3			@ copy address of ByteCounter into r11
 	
 	
 	@ Make the new node & point the node->next to NULL 
@@ -98,6 +99,10 @@ notEmpty:
 	
 	
 finish:
+	ldr r2, =nodeCount2
+	ldr r3, [r2]
+	add r3, #1
+	str r3, [r2]
 	pop {r0-r11, lr}	@ bring stack back to initial state.
 	bx lr				@ return from subroutine
 

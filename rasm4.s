@@ -2,8 +2,8 @@
 @ Name:		Mohammad Amin & Khaja Zuhuruddin
 @ Program:	Rasm4.s
 @ Class:	CS3B
-@ Lab:		RASM3
-@ Date:		April 8, 2020 at 3:30 PM
+@ Lab:		RASM4
+@ Date:		April 29, 2020 at 3:30 PM
 @***********************************************************************
 
 .equiv LEN, 512	@ const that has the maximum bytes getstring readsequiv LEN, 32	
@@ -13,37 +13,58 @@
     push {r0, r1, r2}
     mov r2, #0 
     ldr r0, =rightParen
-    bl putstring
+    bl putstring                     @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
-    ldr r0, =\Index
-    ldr r0, [r0]
-    ldr r1, =indexOut
-    str r2, [r1]
-    bl intasc32
+    ldr r0, =\Index                  @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    ldr r0, [r0]                     @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    ldr r1, =indexOut                @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    str r2, [r1]                     @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    bl intasc32                      @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
     ldr r0, =indexOut
-    bl putstring
+    bl putstring                     @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
     ldr r0, =leftParen
-    bl putstring
+    bl putstring                     @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
     pop {r0, r1, r2}
 
 .endm
 
+.macro printCount
+    push {r0, r1}
 
+    ldr r0, =nodeCount
+    bl putstring                    @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
+    ldr r0, =nodeCount2             @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    ldr r0, [r0]                    @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    ldr r1, =outCount               @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    bl intasc32                     @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    ldr r0, =outCount
+    bl putstring                    @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
+    mov r1, #0
+    str r1, [r0]
+    
+    pop {r0, r1}
+.endM
 .macro ClearScreen String
 
         push {r0, r1}
 
-        ldr r0, =newLine
+        ldr r0, =enter  
+        bl putstring                 @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
+        ldr r0, =szBuffer
+        mov r1, #12
+        bl getstring
         mov r1, #0
+        str r1, [r0]
+        ldr r0, =newLine
 
     _whileClear:
         
-        cmp r1, #55
+        cmp r1, #100
         beq _endC
 
-        bl putstring
+        bl putstring                 @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
         add r1, #1
         b _whileClear
@@ -51,7 +72,7 @@
     _endC:
 
             ldr r0, =cleared
-            bl putstring
+            bl putstring             @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
             pop {r0, r1}
 .endM
@@ -91,30 +112,50 @@
 
 .endM
 
+.macro PrintNumNode
+    push {r0, r1}
+
+    ldr r0, =memoryUsage
+    bl putstring             @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
+    
+    ldr r0, =count           @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    ldr r0, [r0]             @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    ldr r1, =outCount        @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    bl intasc32              @macro intasc32 is used to convert an interger to a asci char so it can printed to the consol via putstring, r0 must contain the value to be converted and r1 must have a buffer large enough to hold the conversion
+    ldr r0, =outCount
+    bl putstring             @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
+    mov r1, #0
+    str r1, [r0]
+
+    ldr r0, =memoryUsageTwo
+    bl putstring             @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
+
+    pop {r0, r1}
+.endm 
 .macro printMenu
 
     push {r0}
 
     ldr r0, =menuOne
-    bl putstring
+    bl putstring             @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
     ldr r0, =menuTwo
-    bl putstring
+    bl putstring             @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
     ldr r0, =menuThree
-    bl putstring
+    bl putstring             @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
     ldr r0, =menuFour
-    bl putstring
+    bl putstring             @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
     ldr r0, =menuFive
-    bl putstring
+    bl putstring             @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
     ldr r0, =menuSix
-    bl putstring
+    bl putstring             @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
     ldr r0, =menuSeven
-    bl putstring
+    bl putstring             @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
     pop {r0}
 
@@ -142,14 +183,17 @@
 
     newLine:    .asciz "\n"
 
+    outCount:   .skip 30
     
     /*** Menu part of data ***/
+
+    enter:          .asciz "\nPress ENTER to continue.\t"
 
     memoryUsage:    .asciz "\nData Structure Memory Consumption: "
 
     memoryUsageTwo: .asciz " bytes"
 
-    nodeCount:      .asciz "\nNumber of Nodes:\n"
+    nodeCount:      .asciz "\nNumber of Nodes:\t"
 
     menuOne:        .asciz "\n<1> View all strings\n"
 
@@ -165,7 +209,7 @@
 
     menuSeven:      .asciz "\n<7> Quit\n"
 
-    inFileName:     .asciz "input2.txt"
+    inFileName:     .asciz "input.txt"
 
     outFileName:    .asciz "output.txt"
 
@@ -202,7 +246,7 @@
 _start:
     
     ldr r0, =message
-    bl putstring
+    bl putstring                 @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
     
 
     push {r1, r2}
@@ -214,10 +258,11 @@ _whileInvalid:
     ClearScreen
 
 _first:
-
+    PrintNumNode
+    printCount
     printMenu
 
-    bl putstring
+    bl putstring                 @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
 
     ldr r0, =szIn
     mov r1, #4
@@ -230,8 +275,8 @@ _first:
 
     cmp r2, #7
     ldreq r0, =finished
-    bleq putstring
-    beq _next
+    bleq putstring              @use macro putstring to output the string pointed to in r0 to the consol, r0 must contain the address of a string of a string that is NULL terminated
+    beq _deleteList
     
     cmp r2, #2
     ldreq r0, =twoError2
@@ -265,16 +310,6 @@ _first:
 _next: 
 
     pop {r1, r2}
-
-    //openFileToRead fileName
-    
-    //readFile szBuffer
-
-    //output szBuffer
-  
-    //closeFile    
-
-    //ClearScreen
 
 end:
    

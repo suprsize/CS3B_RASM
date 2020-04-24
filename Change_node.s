@@ -30,12 +30,12 @@
 @ All registers are preserved as per AAPCS
 @***********************************************************************
 
-.equiv NULL, 		0	@ NULL pointer for linked list
-.equiv NODE_SIZE, 	8	@ byte 0123 for string address | 4567 for *next
-.equiv NEXT,		4	@ the offset to the first byte of *next
-.equiv NOT_FOUND,	-1	@ -1 indicts that no node with keyIndex exist
-.equiv TRUE,		1	@ 1 indicts that the removal was successful
-.equiv FALSE,		0	@ 0 indicts that the removal was not successful
+.equiv Null, 		0	@ Null pointer for linked list
+.equiv nSIZE, 	8	@ byte 0123 for string address | 4567 for *next
+.equiv next2,		4	@ the offset to the first byte of *next
+.equiv not_founhere,	-1	@ -1 indicts that no node with keyIndex exist
+.equiv ture1,		1	@ 1 indicts that the removal was successful
+.equiv fasle0,		0	@ 0 indicts that the removal was not successful
 
 
 .data
@@ -60,6 +60,7 @@ Change_node:
 	push {r1-r11, lr}	@ push r1-r11 and lr to stack, to preserve
 
 	@ Make a second copy of all arguments passed in
+	ldr r0, [r0]
 	mov r7, r0			@ copy address of pointer to Head into r7
 	mov r8, r1			@ copy address of address of newString into r8
 	mov r10, r2			@ copy address of KeyIndex into r10
@@ -71,8 +72,8 @@ Change_node:
 	bl Find_node		@ r0 = address of the first byte of the node in index (keyIndex)
 	
 	@ Check what was returned from Find_node and save it to a register
-	cmp r0, #NOT_FOUND	@ compare(returnValue, NOT_FOUND)
-	beq notFound		@ if no node was found with keyIndex do nothing
+	cmp r0, #not_founhere	@ compare(returnValue, not_founhere)
+	beq nF		@ if no node was found with keyIndex do nothing
 	mov r6, r0			@ r6 = &node that is being removed
 	
 	@ Get the number of bytes that were malloced for keyNode->string
@@ -81,6 +82,7 @@ Change_node:
 	add r0, #1			@ +1 for the null at the end of string
 	
 	@ Decrement the ByteCounter by the number of freed bytes
+	ldr r11, =count
 	ldr r1, [r11]		@ r1 = ByteCounter
 	sub r1, r0			@ r1 = ByteCounter - (InfoString.length() + 1)
 	str r1, [r11]		@ store the new count into ByteCounter 
@@ -106,12 +108,12 @@ Change_node:
 	
 	
 	@ Return the appropriate signal to the caller
-	mov r0, #TRUE		@ RETURN true to indict that the removal was successful
-	b finish			@ end the method
-notFound:
-	mov r0, #FALSE		@ RETURN false to indict that the removal was not successful
+	mov r0, #ture1		@ RETURN true to indict that the removal was successful
+	b f1			@ end the method
+nF:
+	mov r0, #fasle0		@ RETURN false to indict that the removal was not successful
 	
-finish:
+f1:
 	pop {r1-r11, lr}	@ bring stack back to initial state.
 	bx lr				@ return from subroutine
 
